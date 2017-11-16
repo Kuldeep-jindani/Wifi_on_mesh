@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    android:gravity="bottom"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/message_gps"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:padding="4dp"
+        android:layout_margin="3dp"
+        android:src="@mipmap/ic_gps" />
+
+    <com.rockerhieu.emojicon.EmojiconEditText
+        android:id="@+id/message_editText_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Write a message"
+        android:imeOptions="actionSend"
+        android:maxLines="3"
+        android:inputType="textMultiLine|textShortMessage"
+        android:textColor="#7F8C8D"
+        android:textColorHint="#7F8C8D" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+
+        <ImageView
+            android:id="@+id/message_sendBtn"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:padding="4dp"
+            android:layout_margin="3dp"
+            android:background="#FF6634"
+            android:src="@drawable/paperplane" />
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
