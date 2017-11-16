@@ -10,4 +10,13 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
     }
+
+ /*   public void pushMessage(String readMessage) {
+        adapter.add(readMessage);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void setChatManager(ChatManager obj) {
+        chatManager = obj;
+    }*/
 }
