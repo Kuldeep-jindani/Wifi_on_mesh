@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
@@ -30,6 +32,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.saubhagyam.wifi_chat_.Receiver.WiFiDirectBroadcastReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +72,12 @@ public class MainActivity extends AppCompatActivity implements DeviceClickListen
         this.handler = handler;
     }
 
+    ArrayAdapter<String> Wifip2pArrayAdapter;
+
+    WifiP2pManager mManager;
+    WifiP2pManager.Channel mChannel;
+    BroadcastReceiver mReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,20 +92,14 @@ public class MainActivity extends AppCompatActivity implements DeviceClickListen
         edit = (ImageView) findViewById(R.id.edit);
         profile_name = (TextView) findViewById(R.id.profile_name);
         profile_name_edittext = (EditText) findViewById(R.id.profile_name_edittext);
-    /*    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-    }
 
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        Wifip2pArrayAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
+        other_devices.setAdapter(Wifip2pArrayAdapter);
 
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,22 +118,53 @@ public class MainActivity extends AppCompatActivity implements DeviceClickListen
             }
         });
 
-        List<String> otherList = new ArrayList();
+        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        mChannel = mManager.initialize(this, getMainLooper(), null);
+        mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
+        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getApplicationContext(), "searching", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(int reasonCode) {
+                Toast.makeText(getApplicationContext(), "Searching failed. "+ reasonCode, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    public void displayPeers(WifiP2pDeviceList peerList){
+        Wifip2pArrayAdapter.clear();
+        for(WifiP2pDevice peer:peerList.getDeviceList()){
+
+            Wifip2pArrayAdapter.add(peer.deviceName + "\n"+peer.deviceAddress);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+       registerReceiver(mReceiver,intentFilter);
+      /*  List<String> otherList = new ArrayList();
         for (int i = 0; i < new ArrayList<WiFiP2pService>().size(); i++) {
 
             Log.e("connection"+i,new ArrayList<WiFiP2pService>().get(i).toString());
 
-        }
+        }*/
 
-        WiFiDevicesAdapter wiFiDevicesAdapter=new WiFiDevicesAdapter(getApplicationContext(),R.layout.custom_spinner_textview, android.R.id.text1,
+      /*  WiFiDevicesAdapter wiFiDevicesAdapter=new WiFiDevicesAdapter(getApplicationContext(),R.layout.custom_spinner_textview, android.R.id.text1,
                 new ArrayList<WiFiP2pService>());
 //        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), R.layout.custom_spinner_textview, otherList);
-        other_devices.setAdapter(wiFiDevicesAdapter);
+        other_devices.setAdapter(wiFiDevicesAdapter);*/
 
 
 
 
-        other_devices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+     /*   other_devices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
 
@@ -137,7 +172,13 @@ public class MainActivity extends AppCompatActivity implements DeviceClickListen
                         .getItemAtPosition(i));
                 startActivity(new Intent(getApplicationContext(), ChatActivity.class));
             }
-        });
+        });*/
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mReceiver);
     }
 
     @Override
