@@ -6,4 +6,5 @@
     <color name="grey_back">#9E9E9E</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
+    <color name="layout_border_color">#FF111111</color>
 </resources>
