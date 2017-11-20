@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FF9100</color>
-    <color name="colorPrimaryDark">#FF6D00</color>
-    <color name="colorAccent">#795548</color>
-    <color name="grey_back">#9E9E9E</color>
-    <color name="white">#ffffff</color>
+    <color name="primary">#FF9100</color>
+    <color name="primary_dark">#FF6D00</color>
+    <color name="accent">#795548</color>
+    <color name="navigation_bar">#FF6D00</color>
+    <color name="status_bar">#FF6D00</color>
+    <color name="primary_text_color">#424242</color>
+    <color name="text_color">#424242</color>
+
+    <!-- Notification color text -->
     <color name="black">#000000</color>
-    <color name="layout_border_color">#FF111111</color>
+    <color name="gray">#737373</color>
+    <color name="white">#FFFFFF</color>
+
 </resources>
