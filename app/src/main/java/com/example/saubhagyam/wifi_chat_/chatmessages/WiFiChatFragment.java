@@ -173,7 +173,7 @@ public class WiFiChatFragment extends Fragment {
         WifiP2pDevice device = DestinationDeviceTabList.getInstance().getDevice(tabNumber - 1);
         if(device!=null) {
             WiFiP2pService service = ServiceList.getInstance().getServiceByDevice(device);
-            Log.d(TAG, "device address: " + device.deviceAddress + ", service: " + service);
+            Log.d(TAG, "device address: " + device.deviceAddress + ", service: " + service+" Devide name"+device.deviceName);
 
             //call reconnectToService in MainActivity
             ((AutomaticReconnectionListener) getActivity()).reconnectToService(service);

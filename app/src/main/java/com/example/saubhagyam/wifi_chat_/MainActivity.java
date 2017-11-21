@@ -724,7 +724,7 @@ public class MainActivity extends ActionBarActivity implements
                 //i check if tabNum is valid only to be sure.
                 //i using this if, because this peace of code is critical and "sometimes can throw exceptions".
                 if (tabFragment.isValidTabNum(tabNum)) {
-
+                    WifiP2pDevice p2pDevice = new WifiP2pDevice();
                     if (Configuration.DEBUG_VERSION) {
                         //i use this to re-format the message (not really necessary because in the "commercial"
                         //version, if a message contains MAGICADDRESSKEYWORD, this message should be removed and used
@@ -733,10 +733,10 @@ public class MainActivity extends ActionBarActivity implements
                             readMessage = readMessage.replace("+", "");
                             readMessage = readMessage.replace(Configuration.MAGICADDRESSKEYWORD, "Mac Address");
                         }
-                        tabFragment.getChatFragmentByTab(tabNum).pushMessage("Buddy: " + readMessage);
+                        tabFragment.getChatFragmentByTab(tabNum).pushMessage(p2pDevice.deviceName +": " + readMessage);
                     } else {
                         if (!readMessage.contains(Configuration.MAGICADDRESSKEYWORD)) {
-                            tabFragment.getChatFragmentByTab(tabNum).pushMessage("Buddy: " + readMessage);
+                            tabFragment.getChatFragmentByTab(tabNum).pushMessage(p2pDevice.deviceName +": " + readMessage);
                         }
                     }
 
