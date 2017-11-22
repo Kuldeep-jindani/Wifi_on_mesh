@@ -48,6 +48,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -919,6 +920,14 @@ public class MainActivity extends ActionBarActivity implements
                 .commit();
 
         this.getSupportFragmentManager().executePendingTransactions();
+
+        findViewById(R.id.ptt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(), com.example.saubhagyam.wifi_chat_.PTT.MainActivity.class));
+            }
+        });
     }
 
 
