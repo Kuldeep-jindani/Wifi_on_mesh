@@ -4,14 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.saubhagyam.wifi_chat_.SplashScreen">
+    android:layout_gravity="center"
+    android:gravity="center"
+    tools:context="com.example.saubhagyam.wifi_chat_.SplashScreen"
+    android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+   <TextView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:text="An Initiative of"
+       android:textColor="#000000"
+       android:textStyle="bold"
+       android:textSize="30dp"
+       android:textAllCaps="true"
+       android:layout_gravity="center"
+       android:gravity="center"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Team"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:textAllCaps="true"
         android:layout_gravity="center"
-        android:src="@drawable/go_logo"
-        android:layout_weight="0.5"
-        />
+        android:gravity="center"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Charh Ja chhore"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:textSize="30dp"
+        android:layout_gravity="center"
+        android:gravity="center"/>
 
 </LinearLayout>
