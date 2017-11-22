@@ -1,5 +1,6 @@
 package com.example.saubhagyam.wifi_chat_.services;
 
+import android.content.SharedPreferences;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -55,14 +56,15 @@ public class WiFiServicesAdapter extends RecyclerView.Adapter<WiFiServicesAdapte
     }
 
 
+
     /**
      * The ViewHolder of this Adapter, useful to store e recycle element for performance reasons.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final View parent;
-        private final TextView nameText;
-        private final TextView statusText;
-        private final TextView macAddressText;
+        public final View parent;
+        public final TextView nameText;
+        public final TextView statusText;
+        public final TextView macAddressText;
 
         public ViewHolder(View view) {
             super(view);
@@ -73,6 +75,7 @@ public class WiFiServicesAdapter extends RecyclerView.Adapter<WiFiServicesAdapte
             macAddressText = (TextView) view.findViewById(R.id.text2);
             statusText = (TextView) view.findViewById(R.id.text3);
         }
+
 
 
         public void setOnClickListener(View.OnClickListener listener) {
@@ -105,6 +108,7 @@ public class WiFiServicesAdapter extends RecyclerView.Adapter<WiFiServicesAdapte
         viewHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 itemClickListener.itemClicked(v);
             }
         });

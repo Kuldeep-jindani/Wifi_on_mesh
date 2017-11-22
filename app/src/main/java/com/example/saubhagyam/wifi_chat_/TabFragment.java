@@ -17,7 +17,10 @@ import java.util.Locale;
 
 import com.example.saubhagyam.wifi_chat_.R;
 import com.example.saubhagyam.wifi_chat_.chatmessages.WiFiChatFragment;
+import com.example.saubhagyam.wifi_chat_.model.LocalP2PDevice;
 import com.example.saubhagyam.wifi_chat_.services.WiFiP2pServicesFragment;
+import com.example.saubhagyam.wifi_chat_.services.WiFiServicesAdapter;
+
 import lombok.Getter;
 
 /*
@@ -101,6 +104,7 @@ public class TabFragment extends Fragment {
     public TabFragment() {
     }
 
+    public PagerSlidingTabStrip tabs;
     /**
      * Method to get the Fragment, specifying the position / tabnumber.
      *
@@ -122,7 +126,7 @@ public class TabFragment extends Fragment {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // Bind the tabs to the ViewPager
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
+        tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
         tabs.setViewPager(mViewPager);
 
 
@@ -199,7 +203,9 @@ public class TabFragment extends Fragment {
 //                        return DeviceTabList.getInstance().getDevice(position).deviceName.toUpperCase(l);
 //                    }
                     //use this to be sure
-                    return ("Chat" + position).toUpperCase(l);
+
+                    WiFiServicesAdapter.ViewHolder viewHolder=new WiFiServicesAdapter.ViewHolder(getWiFiP2pServicesFragment().getView());
+                    return ("CHAT "+position);
             }
         }
     }

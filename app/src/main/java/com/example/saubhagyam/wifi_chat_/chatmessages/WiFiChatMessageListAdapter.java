@@ -15,6 +15,7 @@ package com.example.saubhagyam.wifi_chat_.chatmessages;
  * limitations under the License.
  */
 import android.content.Context;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.saubhagyam.wifi_chat_.R;
+import com.example.saubhagyam.wifi_chat_.model.LocalP2PDevice;
 
 /**
  * This class is the ArrayAdapter to represents data inside the {@link it.polimi.deib.p2pchat.discovery.chatmessages.WiFiChatFragment}.
@@ -63,7 +65,7 @@ class WiFiChatMessageListAdapter extends ArrayAdapter<String> {
                 if(chatFragment.isGrayScale()) {
                     nameText.setTextColor(chatFragment.getResources().getColor(R.color.gray));
                 } else {
-                    if (message.startsWith("Me: ")) {
+                    if (message.startsWith("Me :")) {
                         nameText.setTextAppearance(chatFragment.getActivity(),
                                 R.style.normalText);
                     } else {

@@ -27,6 +27,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.example.saubhagyam.wifi_chat_.Configuration;
+import com.example.saubhagyam.wifi_chat_.model.LocalP2PDevice;
+
 import lombok.Getter;
 import lombok.Setter;
 

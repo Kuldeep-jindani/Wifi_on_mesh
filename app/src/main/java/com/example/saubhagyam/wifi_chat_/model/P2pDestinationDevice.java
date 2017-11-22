@@ -37,6 +37,11 @@ public class P2pDestinationDevice {
         return destinationIpAddress;
     }
 
+
+    public static final P2pDestinationDevice instance=new P2pDestinationDevice();
+
+    public static P2pDestinationDevice getInstance(){return instance;}
+
     public void setDestinationIpAddress(String destinationIpAddress) {
         this.destinationIpAddress = destinationIpAddress;
     }

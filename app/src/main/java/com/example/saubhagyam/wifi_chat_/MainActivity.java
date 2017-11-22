@@ -18,10 +18,15 @@ package com.example.saubhagyam.wifi_chat_;
  * limitations under the License.
  */
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -38,6 +43,7 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -61,6 +67,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.example.saubhagyam.wifi_chat_.services.WiFiP2pService;
@@ -725,6 +732,7 @@ public class MainActivity extends ActionBarActivity implements
                 //i using this if, because this peace of code is critical and "sometimes can throw exceptions".
                 if (tabFragment.isValidTabNum(tabNum)) {
                     WifiP2pDevice p2pDevice = new WifiP2pDevice();
+                    WiFiChatFragment wiFiChatFragment=WiFiChatFragment.newInstance();
                     if (Configuration.DEBUG_VERSION) {
                         //i use this to re-format the message (not really necessary because in the "commercial"
                         //version, if a message contains MAGICADDRESSKEYWORD, this message should be removed and used
@@ -733,10 +741,46 @@ public class MainActivity extends ActionBarActivity implements
                             readMessage = readMessage.replace("+", "");
                             readMessage = readMessage.replace(Configuration.MAGICADDRESSKEYWORD, "Mac Address");
                         }
-                        tabFragment.getChatFragmentByTab(tabNum).pushMessage(p2pDevice.deviceName +": " + readMessage);
+
+//                        tabFragment.tabs.setTag(tabNum,tabFragment.tabs.getTag(tabNum)+"*");
+
+
+
+                        Intent notificationIntent = new Intent(getApplication(), MainActivity.class);
+                        NotificationCompat.BigTextStyle inboxStyle = new NotificationCompat.BigTextStyle();
+                        final int icon = R.drawable.ic_launcher;
+                        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+
+                        PendingIntent contentIntent = PendingIntent.getActivity(this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+                        NotificationCompat.Builder mBuilder =
+                                (NotificationCompat.Builder) new NotificationCompat.Builder(this).setSmallIcon(icon).setTicker("Tutoring is On").setWhen(0)
+                                        .setAutoCancel(true)
+                                        .setContentTitle("Time to Available")
+                                        .setSound(Uri.parse(String.valueOf(android.app.Notification.DEFAULT_SOUND)))
+                                        .setStyle(inboxStyle)
+                                        .setContentIntent(contentIntent)
+                                        .setWhen(System.currentTimeMillis())
+                                        .setSmallIcon(R.drawable.ic_launcher)
+                                        .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ic_launcher));
+
+
+                        String myText = readMessage;
+                        android.app.Notification notification = new NotificationCompat.BigTextStyle(mBuilder)
+                                .bigText(myText).build();
+
+                        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        mNotificationManager.notify(100+tabNum, notification);
+
+
+                        Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
+                        tabFragment.getChatFragmentByTab(tabNum).pushMessage( readMessage);
                     } else {
                         if (!readMessage.contains(Configuration.MAGICADDRESSKEYWORD)) {
-                            tabFragment.getChatFragmentByTab(tabNum).pushMessage(p2pDevice.deviceName +": " + readMessage);
+                            tabFragment.getChatFragmentByTab(tabNum).pushMessage( readMessage);
                         }
                     }
 

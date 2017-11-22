@@ -15,6 +15,7 @@ package com.example.saubhagyam.wifi_chat_.chatmessages;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import android.location.LocationManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,18 +25,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.saubhagyam.wifi_chat_.GPSTracker;
 import com.example.saubhagyam.wifi_chat_.R;
 import com.example.saubhagyam.wifi_chat_.DestinationDeviceTabList;
+import com.example.saubhagyam.wifi_chat_.model.LocalP2PDevice;
 import com.example.saubhagyam.wifi_chat_.socketmanagers.ChatManager;
 import com.example.saubhagyam.wifi_chat_.services.ServiceList;
 import com.example.saubhagyam.wifi_chat_.chatmessages.waitingtosend.WaitingToSendQueue;
 import com.example.saubhagyam.wifi_chat_.services.WiFiP2pService;
 import lombok.Getter;
 import lombok.Setter;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Class fragment that handles chat related UI which includes a list view for messages
@@ -132,7 +138,7 @@ public class WiFiChatFragment extends Fragment {
 
         if (chatManager != null) {
             if (!chatManager.isDisable()) {
-                chatManager.write((combineMessages).getBytes());
+                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName+combineMessages).getBytes());
                 WaitingToSendQueue.getInstance().getWaitingToSendItemsList(tabNumber).clear();
             } else {
                 Log.d(TAG, "Chatmanager disabled, impossible to send the queued combined message");
@@ -203,17 +209,50 @@ public class WiFiChatFragment extends Fragment {
                                 Log.d(TAG, "chatmanager state: enable");
 
                                 //send message to the ChatManager's outputStream.
-                                chatManager.write(chatLine.getText().toString().getBytes());
+                                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName+" :"+chatLine.getText().toString()).getBytes());
                             } else {
                                 Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
 
                                 addToWaitingToSendQueueAndTryReconnect();
                             }
 
-                            pushMessage("Me: " + chatLine.getText().toString());
+                            pushMessage( "Me :"+ chatLine.getText().toString());
                             chatLine.setText("");
                         } else {
                             Log.d(TAG, "chatmanager is null");
+                        }
+                    }
+                });
+
+        view.findViewById(R.id.sendLocation).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+
+                        GPSTracker gps = new GPSTracker(getContext());
+                        LocationManager locationManager = (LocationManager) getContext()
+                                .getSystemService(LOCATION_SERVICE);
+                        if(gps.canGetLocation()) {
+                            if (chatManager != null) {
+                                if (!chatManager.isDisable()) {
+                                    Log.d(TAG, "chatmanager state: enable");
+
+//                                    Toast.makeText(getContext(), locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);, Toast.LENGTH_SHORT).show();
+                                    //send message to the ChatManager's outputStream.
+                                    chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(gps.getLatitude())+" Langitude: "+String.valueOf(gps.getLongitude())).getBytes());
+                                } else {
+                                    Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
+
+                                    addToWaitingToSendQueueAndTryReconnect();
+                                }
+
+                                pushMessage("Me :" + " Latitude: " + String.valueOf(gps.getLatitude())+" Langitude: "+String.valueOf(gps.getLongitude()));
+                                chatLine.setText("");
+                            } else {
+                                Log.d(TAG, "chatmanager is null");
+                            }
+                            gps.stopUsingGPS();
                         }
                     }
                 });
