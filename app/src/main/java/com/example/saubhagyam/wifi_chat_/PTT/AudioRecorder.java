@@ -34,6 +34,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import static android.content.ContentValues.TAG;
+
 public class AudioRecorder implements Runnable {
     private static final String LOG_TAG = "AudioRecorder";
     private static final Logger s_logger = Logger.getLogger("com.example.saubhagyam.wifi_chat_.collider.Collider");
@@ -115,8 +117,9 @@ public class AudioRecorder implements Runnable {
                     if (m_state == START) {
                         Log.e("state", "m_state" + m_state);
                         Log.e("audio record", "recorder" + m_audioRecord);
-
-                        m_audioRecord.startRecording();
+                        AudioRecord recorder = findAudioRecord();
+//                        recorder.release();
+                        recorder.startRecording();
                         m_state = RUN;
                     } else if (m_state == STOP) {
                         m_audioRecord.stop();
@@ -286,6 +289,32 @@ public class AudioRecorder implements Runnable {
                 final String audioFormat = ("PCM:" + sampleRate);
 
                 return new AudioRecorder(sessionManager, audioRecord, audioFormat, frameSize, bufferSize, repeat);
+            }
+        }
+        return null;
+    }
+
+    private static int[] mSampleRates = new int[] { 8000, 11025, 22050, 44100 };
+    public AudioRecord findAudioRecord() {
+        for (int rate : mSampleRates) {
+            for (short audioFormat : new short[] { AudioFormat.ENCODING_PCM_8BIT, AudioFormat.ENCODING_PCM_16BIT }) {
+                for (short channelConfig : new short[] { AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO }) {
+                    try {
+                        Log.d(TAG, "Attempting rate " + rate + "Hz, bits: " + audioFormat + ", channel: "
+                                + channelConfig);
+                        int bufferSize = AudioRecord.getMinBufferSize(rate, channelConfig, audioFormat);
+
+                        if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+                            // check if we can instantiate and have a success
+                            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, rate, channelConfig, audioFormat, bufferSize);
+
+                            if (recorder.getState() == AudioRecord.STATE_INITIALIZED)
+                                return recorder;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, rate + "Exception, keep trying.",e);
+                    }
+                }
             }
         }
         return null;
