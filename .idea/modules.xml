@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Wifi_chat_.iml" filepath="$PROJECT_DIR$/Wifi_chat_.iml" />
       <module fileurl="file://$PROJECT_DIR$/Wifi_on_mesh.iml" filepath="$PROJECT_DIR$/Wifi_on_mesh.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
