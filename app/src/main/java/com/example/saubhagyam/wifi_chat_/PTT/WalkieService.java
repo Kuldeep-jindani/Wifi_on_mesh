@@ -61,6 +61,7 @@ public class WalkieService extends Service
     private Collider m_collider;
     private ColliderThread m_colliderThread;
     private Channel m_channel;
+    SessionManager sessionManager;
 
     public interface StateListener
     {
@@ -234,6 +235,7 @@ public class WalkieService extends Service
         super.onCreate();
         Log.d( LOG_TAG, "onCreate" );
         m_nsdManager = (NsdManager) getSystemService( NSD_SERVICE );
+        sessionManager = new SessionManager();
     }
 
     public IBinder onBind(Intent intent )
@@ -257,7 +259,7 @@ public class WalkieService extends Service
         {
             final String deviceID = getDeviceID( getContentResolver() );
 
-            final SessionManager sessionManager = new SessionManager();
+
             m_audioRecorder = AudioRecorder.create( sessionManager, /*repeat*/false );
 
             if (m_audioRecorder != null)

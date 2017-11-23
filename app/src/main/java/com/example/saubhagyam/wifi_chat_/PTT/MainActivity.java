@@ -241,6 +241,7 @@ public class MainActivity extends Activity implements WalkieService.StateListene
         final StationInfo stationInfo = m_listViewAdapter.getItem( position );
         if (pressed)
         {
+            assert stationInfo != null;
             stationInfo.session.setSendAudioFrame( true );
             final int receivers = m_receivers++;
             if (!m_ptt && (receivers == 0))
@@ -248,6 +249,7 @@ public class MainActivity extends Activity implements WalkieService.StateListene
         }
         else
         {
+            assert stationInfo != null;
             stationInfo.session.setSendAudioFrame( false );
             final int receivers = --m_receivers;
             if (!m_ptt && (receivers == 0))
