@@ -102,6 +102,7 @@ public class AudioRecorder implements Runnable {
         byte[] byteBufferArray = byteBuffer.getNioByteBuffer().array();
         int byteBufferArrayOffset = byteBuffer.getNioByteBuffer().arrayOffset();
         final int rates[] = {11025, 16000, 22050, 44100};
+
 //        m_audioRecord=new AudioRecord( MediaRecorder.AudioSource.MIC,rates[0],AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,44100*4);
 
         boolean interrupted = false;
@@ -116,10 +117,13 @@ public class AudioRecorder implements Runnable {
 
                     if (m_state == START) {
                         Log.e("state", "m_state" + m_state);
-                        Log.e("audio record", "recorder" + m_audioRecord);
-                        AudioRecord recorder = findAudioRecord();
+                       /* AudioRecorder audioRecorder=create(new SessionManager(),false);
+                        audioRecorder.startRecording(true);*//*
+                        Log.e("audio record", "recorder" + recorder);
 //                        recorder.release();
-                        recorder.startRecording();
+                        recorder.startRecording();*/
+                        m_audioRecord=findAudioRecord();
+                        m_audioRecord.startRecording();
                         m_state = RUN;
                     } else if (m_state == STOP) {
                         m_audioRecord.stop();
@@ -294,11 +298,11 @@ public class AudioRecorder implements Runnable {
         return null;
     }
 
-    private static int[] mSampleRates = new int[] { 8000, 11025, 22050, 44100 };
+    private static int[] mSampleRates ={11025, 16000, 22050, 44100};
     public AudioRecord findAudioRecord() {
-        for (int rate : mSampleRates) {
+        /*for (int rate : mSampleRates) {
             for (short audioFormat : new short[] { AudioFormat.ENCODING_PCM_8BIT, AudioFormat.ENCODING_PCM_16BIT }) {
-                for (short channelConfig : new short[] { AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO }) {
+                for (short channelConfig : new short[] { AudioFormat.CHANNEL_IN_MONO*//*, AudioFormat.CHANNEL_IN_STEREO*//* }) {
                     try {
                         Log.d(TAG, "Attempting rate " + rate + "Hz, bits: " + audioFormat + ", channel: "
                                 + channelConfig);
@@ -316,7 +320,47 @@ public class AudioRecorder implements Runnable {
                     }
                 }
             }
+        }*/
+
+        int sampleRateInHz = 8000;// 44100, 22050 and 11025
+        int channelConfig = AudioFormat.CHANNEL_IN_MONO;
+        int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+
+        //int bufferSize =11025 +
+       /* int bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig, audioFormat);
+
+
+        short[] buffer = new short[bufferSize];
+
+        AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRateInHz,channelConfig, audioFormat, bufferSize);
+
+        if(audioRecord.getState()== AudioRecord.STATE_INITIALIZED){
+            audioRecord.startRecording();
+            Log.e("recording", "before");
+
+
+            boolean flag = true;
+            while (flag) {
+                int bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
+                System.out.println(buffer);
+            }
+
+            audioRecord.stop();
+            audioRecord.release();
         }
-        return null;
+        Log.e("recording", "stopeed");*/
+            Log.d(TAG, "Attempting rate " + sampleRateInHz + "Hz, bits: " + audioFormat + ", channel: "
+                    + channelConfig);
+            int bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat);
+
+        AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, sampleRateInHz, channelConfig, audioFormat, bufferSize);
+        if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+                // check if we can instantiate and have a success
+            recorder = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, sampleRateInHz, channelConfig, audioFormat, bufferSize);
+                if (recorder.getState() == AudioRecord.STATE_INITIALIZED)
+                    return recorder;
+            }
+
+        return recorder;
     }
 }

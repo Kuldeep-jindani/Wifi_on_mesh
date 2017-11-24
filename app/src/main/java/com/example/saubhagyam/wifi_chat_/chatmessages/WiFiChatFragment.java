@@ -15,14 +15,22 @@ package com.example.saubhagyam.wifi_chat_.chatmessages;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +46,11 @@ import com.example.saubhagyam.wifi_chat_.socketmanagers.ChatManager;
 import com.example.saubhagyam.wifi_chat_.services.ServiceList;
 import com.example.saubhagyam.wifi_chat_.chatmessages.waitingtosend.WaitingToSendQueue;
 import com.example.saubhagyam.wifi_chat_.services.WiFiP2pService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,11 +62,16 @@ import static android.content.Context.LOCATION_SERVICE;
  * <p></p>
  * Created by Stefano Cappa on 04/02/15, based on google code samples.
  */
-public class WiFiChatFragment extends Fragment {
+public class WiFiChatFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
     private static final String TAG = "WiFiChatFragment";
 
-     private Integer tabNumber;
+    private Integer tabNumber;
+
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLocation;
+    private LocationManager locationManager;
+    private LocationRequest mLocationRequest;
 
     public Integer getTabNumber() {
         return tabNumber;
@@ -64,8 +82,8 @@ public class WiFiChatFragment extends Fragment {
     }
 
     private static boolean firstStartSendAddress;
-     private boolean grayScale = true;
-     private final List<String> items = new ArrayList<>();
+    private boolean grayScale = true;
+    private final List<String> items = new ArrayList<>();
 
     public boolean isGrayScale() {
         return grayScale;
@@ -81,7 +99,7 @@ public class WiFiChatFragment extends Fragment {
 
     private TextView chatLine;
 
-   private ChatManager chatManager;
+    private ChatManager chatManager;
 
     public ChatManager getChatManager() {
         return chatManager;
@@ -93,6 +111,11 @@ public class WiFiChatFragment extends Fragment {
 
     private com.example.saubhagyam.wifi_chat_.chatmessages.WiFiChatMessageListAdapter adapter = null;
 
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
     /**
      * Callback interface to call methods reconnectToService in {@link it.polimi.deib.p2pchat.discovery.MainActivity}.
      * MainActivity implements this interface.
@@ -103,6 +126,7 @@ public class WiFiChatFragment extends Fragment {
 
     /**
      * Method to obtain a new Fragment's instance.
+     *
      * @return This Fragment instance.
      */
     public static WiFiChatFragment newInstance() {
@@ -112,7 +136,8 @@ public class WiFiChatFragment extends Fragment {
     /**
      * Default Fragment constructor.
      */
-    public WiFiChatFragment() {}
+    public WiFiChatFragment() {
+    }
 
 
     /**
@@ -128,7 +153,7 @@ public class WiFiChatFragment extends Fragment {
         String combineMessages = "";
         List<String> listCopy = WaitingToSendQueue.getInstance().getWaitingToSendItemsList(tabNumber);
         for (String message : listCopy) {
-            if(!message.equals("") && !message.equals("\n")  ) {
+            if (!message.equals("") && !message.equals("\n")) {
                 combineMessages = combineMessages + "\n" + message;
             }
         }
@@ -138,7 +163,7 @@ public class WiFiChatFragment extends Fragment {
 
         if (chatManager != null) {
             if (!chatManager.isDisable()) {
-                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName+combineMessages).getBytes());
+                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + combineMessages).getBytes());
                 WaitingToSendQueue.getInstance().getWaitingToSendItemsList(tabNumber).clear();
             } else {
                 Log.d(TAG, "Chatmanager disabled, impossible to send the queued combined message");
@@ -151,6 +176,7 @@ public class WiFiChatFragment extends Fragment {
     /**
      * Method to add a message to the Fragment's listView and notifies this update to
      * {@link it.polimi.deib.p2pchat.discovery.chatmessages.WiFiChatMessageListAdapter}.
+     *
      * @param readMessage String that represents the message to add.
      */
     public void pushMessage(String readMessage) {
@@ -162,7 +188,7 @@ public class WiFiChatFragment extends Fragment {
      * Method that updates the {@link it.polimi.deib.p2pchat.discovery.chatmessages.WiFiChatMessageListAdapter}.
      */
     public void updateChatMessageListAdapter() {
-        if(adapter!=null) {
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
     }
@@ -177,27 +203,36 @@ public class WiFiChatFragment extends Fragment {
 
         //try to reconnect
         WifiP2pDevice device = DestinationDeviceTabList.getInstance().getDevice(tabNumber - 1);
-        if(device!=null) {
+        if (device != null) {
             WiFiP2pService service = ServiceList.getInstance().getServiceByDevice(device);
-            Log.d(TAG, "device address: " + device.deviceAddress + ", service: " + service+" Devide name"+device.deviceName);
+            Log.d(TAG, "device address: " + device.deviceAddress + ", service: " + service + " Devide name" + device.deviceName);
 
             //call reconnectToService in MainActivity
             ((AutomaticReconnectionListener) getActivity()).reconnectToService(service);
 
         } else {
-            Log.d(TAG,"addToWaitingToSendQueueAndTryReconnect device == null, i can't do anything");
+            Log.d(TAG, "addToWaitingToSendQueueAndTryReconnect device == null, i can't do anything");
         }
     }
 
+    ImageView sendLocation;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chatmessage_list, container, false);
 
         chatLine = (TextView) view.findViewById(R.id.txtChatLine);
         ListView listView = (ListView) view.findViewById(R.id.list);
 
-        adapter = new WiFiChatMessageListAdapter(getActivity(),R.id.txtChatLine, this);
+        adapter = new WiFiChatMessageListAdapter(getActivity(), R.id.txtChatLine, this);
         listView.setAdapter(adapter);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
 
         view.findViewById(R.id.sendMessage).setOnClickListener(
                 new View.OnClickListener() {
@@ -209,14 +244,14 @@ public class WiFiChatFragment extends Fragment {
                                 Log.d(TAG, "chatmanager state: enable");
 
                                 //send message to the ChatManager's outputStream.
-                                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName+" :"+chatLine.getText().toString()).getBytes());
+                                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " :" + chatLine.getText().toString()).getBytes());
                             } else {
                                 Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
 
                                 addToWaitingToSendQueueAndTryReconnect();
                             }
 
-                            pushMessage( "Me :"+ chatLine.getText().toString());
+                            pushMessage("Me :" + chatLine.getText().toString());
                             chatLine.setText("");
                         } else {
                             Log.d(TAG, "chatmanager is null");
@@ -224,40 +259,100 @@ public class WiFiChatFragment extends Fragment {
                     }
                 });
 
-        view.findViewById(R.id.sendLocation).setOnClickListener(
-                new View.OnClickListener() {
+       sendLocation=view.findViewById(R.id.sendLocation);
 
-                    @Override
-                    public void onClick(View arg0) {
+        return view;
+    }
 
-                        GPSTracker gps = new GPSTracker(getContext());
-                        LocationManager locationManager = (LocationManager) getContext()
-                                .getSystemService(LOCATION_SERVICE);
-                        if(gps.canGetLocation()) {
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        startLocationUpdates();
+        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLocation == null) {
+            startLocationUpdates();
+        }
+        if (mLocation != null) {
+            double latitude = mLocation.getLatitude();
+            double longitude = mLocation.getLongitude();
+
+            sendLocation.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View arg0) {
+
+                            GPSTracker gps = new GPSTracker(getContext());
+                            LocationManager locationManager = (LocationManager) getContext()
+                                    .getSystemService(LOCATION_SERVICE);
+//                        if (gps.canGetLocation()) {
                             if (chatManager != null) {
                                 if (!chatManager.isDisable()) {
                                     Log.d(TAG, "chatmanager state: enable");
 
 //                                    Toast.makeText(getContext(), locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);, Toast.LENGTH_SHORT).show();
                                     //send message to the ChatManager's outputStream.
-                                    chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(gps.getLatitude())+" Langitude: "+String.valueOf(gps.getLongitude())).getBytes());
+                                    chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(mLocation.getLatitude()) + " Langitude: " + String.valueOf(mLocation.getLongitude())).getBytes());
                                 } else {
                                     Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
 
                                     addToWaitingToSendQueueAndTryReconnect();
                                 }
 
-                                pushMessage("Me :" + " Latitude: " + String.valueOf(gps.getLatitude())+" Langitude: "+String.valueOf(gps.getLongitude()));
+                                pushMessage("Me :" + " Latitude: " + String.valueOf(mLocation.getLatitude()) + " Langitude: " + String.valueOf(mLocation.getLongitude()));
                                 chatLine.setText("");
                             } else {
                                 Log.d(TAG, "chatmanager is null");
                             }
-                            gps.stopUsingGPS();
+//                            gps.stopUsingGPS();
+//                        }
                         }
-                    }
-                });
+                    });
+        } else {
+            // Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        return view;
+    protected void startLocationUpdates() {
+        // Create the location request
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10)
+                .setFastestInterval(10);
+        // Request location updates
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                mLocationRequest, this);
+        Log.d("reque", "--->>>>");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Connection Suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode());
     }
 
 

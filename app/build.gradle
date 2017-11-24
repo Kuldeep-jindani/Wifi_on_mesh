@@ -9,6 +9,7 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -46,6 +47,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.0.0'
     compile 'com.android.support:cardview-v7:23.0.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    compile 'com.google.android.gms:play-services:9.0.2'
     compile 'org.js-labs:js-collider:0.1.2'
     testCompile 'junit:junit:4.12'
     provided 'org.projectlombok:lombok:1.16.8'

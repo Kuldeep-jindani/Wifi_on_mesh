@@ -18,6 +18,7 @@
  */
 package com.example.saubhagyam.wifi_chat_.PTT;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -29,6 +30,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -37,6 +39,8 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -52,6 +56,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.saubhagyam.wifi_chat_.R;
 
@@ -87,6 +92,7 @@ public class MainActivity extends Activity implements WalkieService.StateListene
     {
         public void onStateChanged( boolean state )
         {
+            Log.e("state", String.valueOf(state));
             if (state)
             {
                 if (!m_ptt)
@@ -235,7 +241,39 @@ public class MainActivity extends Activity implements WalkieService.StateListene
             }
         }
     }
+    private boolean hasRecordAudioPermission(){
+        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
 
+        Log.e("Has RECORD_AUDIO permit" , String.valueOf(hasPermission));
+        return hasPermission;
+    }
+
+    int PERMISSIONS_REQUEST_RECORD_AUDIO=1100;
+
+    private void requestRecordAudioPermission(){
+
+        String requiredPermission = Manifest.permission.RECORD_AUDIO;
+
+        // If the user previously denied this permission then show a message explaining why
+        // this permission is needed
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                requiredPermission)) {
+            Toast.makeText(getApplicationContext(), "This app needs to record audio through the microphone....", Toast.LENGTH_SHORT).show();
+        }
+
+        // request the permission.
+        ActivityCompat.requestPermissions(this,
+                new String[]{requiredPermission},
+                PERMISSIONS_REQUEST_RECORD_AUDIO);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        // This method is called when the user responds to the permissions dialog
+    }
     public void onListViewItemPressed( int position, boolean pressed )
     {
         final StationInfo stationInfo = m_listViewAdapter.getItem( position );
@@ -314,6 +352,10 @@ public class MainActivity extends Activity implements WalkieService.StateListene
         textView.setTextColor( Color.GREEN );
 
         m_buttonTalk = (SwitchButton) findViewById( R.id.buttonTalk );
+
+        if (!hasRecordAudioPermission()){
+            requestRecordAudioPermission();
+        }
     }
 
     public boolean onCreateOptionsMenu( Menu menu )
