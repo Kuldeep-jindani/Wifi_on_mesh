@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF9100</color>
+  <!--  <color name="primary">#FF9100</color>
     <color name="primary_dark">#FF6D00</color>
+    <color name="accent">#795548</color>-->
+    <color name="primary">#2E7D32</color>
+    <color name="primary_dark">#1B5E20</color>
     <color name="accent">#795548</color>
-    <color name="navigation_bar">#FF6D00</color>
-    <color name="status_bar">#FF6D00</color>
+
+    <color name="navigation_bar">#1B5E20</color>
+    <color name="status_bar">#1B5E20</color>
     <color name="primary_text_color">#424242</color>
     <color name="text_color">#424242</color>
 

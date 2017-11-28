@@ -6,38 +6,52 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:gravity="center"
+    android:background="@mipmap/splashlogo"
     tools:context="com.example.saubhagyam.wifi_chat_.SplashScreen"
     android:orientation="vertical">
 
-   <TextView
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:text="An Initiative of"
-       android:textColor="#000000"
-       android:textStyle="bold"
-       android:textSize="30dp"
-       android:textAllCaps="true"
-       android:layout_gravity="center"
-       android:gravity="center"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Team"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:textSize="30dp"
-        android:textAllCaps="true"
+    <LinearLayout
         android:layout_gravity="center"
-        android:gravity="center"/>
-    <TextView
+        android:gravity="center"
+        android:background="#64000000"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Charh Ja chhore"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:textAllCaps="true"
-        android:textSize="30dp"
-        android:layout_gravity="center"
-        android:gravity="center"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:src="@mipmap/wifichat"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="An Initiative of"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:textAllCaps="true"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Team"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:textAllCaps="true"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Charh Ja chhore"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:textSize="30dp"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+
+    </LinearLayout>
 
 </LinearLayout>

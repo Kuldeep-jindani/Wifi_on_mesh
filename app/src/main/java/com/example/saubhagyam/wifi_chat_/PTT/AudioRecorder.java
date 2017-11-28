@@ -322,6 +322,8 @@ public class AudioRecorder implements Runnable {
             }
         }*/
 
+
+
         int sampleRateInHz = 8000;// 44100, 22050 and 11025
         int channelConfig = AudioFormat.CHANNEL_IN_MONO;
         int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
