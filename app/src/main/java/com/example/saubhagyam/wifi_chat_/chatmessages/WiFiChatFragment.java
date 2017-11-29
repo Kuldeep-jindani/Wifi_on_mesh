@@ -1,4 +1,3 @@
-
 package com.example.saubhagyam.wifi_chat_.chatmessages;
 /*
  * Copyright (C) 2015-2016 Stefano Cappa
@@ -20,6 +19,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
@@ -216,6 +216,7 @@ public class WiFiChatFragment extends Fragment implements GoogleApiClient.Connec
     }
 
     ImageView sendLocation;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chatmessage_list, container, false);
@@ -259,6 +260,118 @@ public class WiFiChatFragment extends Fragment implements GoogleApiClient.Connec
                     }
                 });
 
+        view.findViewById(R.id.sendLocation).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+
+                        GPSTracker gps = new GPSTracker(getContext());
+                        LocationManager locationManager = (LocationManager) getContext()
+                                .getSystemService(LOCATION_SERVICE);
+//                        if (gps.canGetLocation()) {
+
+
+                        if (chatManager != null) {
+                            if (!chatManager.isDisable()) {
+                                Log.d(TAG, "chatmanager state: enable");
+
+//                                    Toast.makeText(getContext(), locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);, Toast.LENGTH_SHORT).show();
+                                //send message to the ChatManager's outputStream.
+                                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(gps.getLatitude()) + " Langitude: " + String.valueOf(gps.getLongitude())).getBytes());
+                            } else {
+                                Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
+
+                                addToWaitingToSendQueueAndTryReconnect();
+                            }
+
+                            pushMessage("Me :" + " Latitude: " + String.valueOf(gps.getLatitude()) + " Langitude: " + String.valueOf(gps.getLongitude()));
+                            chatLine.setText("");
+                        } else {
+                            Log.d(TAG, "chatmanager is null");
+                        }
+
+                       /* LocationListener locationListener = new LocationListener() {
+                            public void onLocationChanged(Location location) {
+                                // Called when a new location is found by the network location provider.
+                                if (chatManager != null) {
+                                    if (!chatManager.isDisable()) {
+                                        Log.d(TAG, "chatmanager state: enable");
+
+//                                    Toast.makeText(getContext(), locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);, Toast.LENGTH_SHORT).show();
+                                        //send message to the ChatManager's outputStream.
+                                        chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(location.getLatitude()) + " Langitude: " + String.valueOf(location.getLongitude())).getBytes());
+                                    } else {
+                                        Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
+
+                                        addToWaitingToSendQueueAndTryReconnect();
+                                    }
+
+                                    pushMessage("Me :" + " Latitude: " + String.valueOf(location.getLatitude()) + " Langitude: " + String.valueOf(location.getLongitude()));
+                                    chatLine.setText("");
+                                } else {
+                                    Log.d(TAG, "chatmanager is null");
+                                }
+                            }
+
+                            public void onStatusChanged(String provider, int status, Bundle extras) {
+                            }
+
+                            public void onProviderEnabled(String provider) {
+                            }
+
+                            public void onProviderDisabled(String provider) {
+                            }
+                        };
+
+// Register the listener with the Location Manager to receive location updates
+                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+
+                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                            return;
+                        }
+*/
+
+
+
+
+
+
+
+
+
+                      /*  Location location=gps.getLocation();
+                        Log.e("location",location.toString());
+                        if (chatManager != null) {
+                            if (!chatManager.isDisable()) {
+                                Log.d(TAG, "chatmanager state: enable");
+
+//                                    Toast.makeText(getContext(), locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);, Toast.LENGTH_SHORT).show();
+                                //send message to the ChatManager's outputStream.
+                                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(gps.getLatitude()) + " Langitude: " + String.valueOf(gps.getLongitude())).getBytes());
+                            } else {
+                                Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
+
+                                addToWaitingToSendQueueAndTryReconnect();
+                            }
+
+                            pushMessage("Me :" + " Latitude: " + String.valueOf(gps.getLatitude()) + " Langitude: " + String.valueOf(gps.getLongitude()));
+                            chatLine.setText("");
+                        } else {
+                            Log.d(TAG, "chatmanager is null");
+                        }*/
+//                            gps.stopUsingGPS();
+//                        }
+                    }
+                });
+
        sendLocation=view.findViewById(R.id.sendLocation);
 
         return view;
@@ -285,7 +398,7 @@ public class WiFiChatFragment extends Fragment implements GoogleApiClient.Connec
             double latitude = mLocation.getLatitude();
             double longitude = mLocation.getLongitude();
 
-            sendLocation.setOnClickListener(
+            /*sendLocation.setOnClickListener(
                     new View.OnClickListener() {
 
                         @Override
@@ -316,7 +429,7 @@ public class WiFiChatFragment extends Fragment implements GoogleApiClient.Connec
 //                            gps.stopUsingGPS();
 //                        }
                         }
-                    });
+                    });*/
         } else {
             // Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
         }
