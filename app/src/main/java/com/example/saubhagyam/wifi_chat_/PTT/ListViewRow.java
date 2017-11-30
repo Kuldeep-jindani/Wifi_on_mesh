@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.example.saubhagyam.wifi_chat_.R;
 
-class ListViewRow extends LinearLayout
+public class ListViewRow extends LinearLayout
 {
     private static final String LOG_TAG = ListViewRow.class.getSimpleName();
 
