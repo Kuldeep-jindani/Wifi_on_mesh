@@ -278,14 +278,14 @@ public class WiFiChatFragment extends Fragment implements GoogleApiClient.Connec
 
 //                                    Toast.makeText(getContext(), locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);, Toast.LENGTH_SHORT).show();
                                 //send message to the ChatManager's outputStream.
-                                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(gps.getLatitude()) + " Langitude: " + String.valueOf(gps.getLongitude())).getBytes());
+                                chatManager.write((LocalP2PDevice.getInstance().getLocalDevice().deviceName + " : Latitude: " + String.valueOf(gps.getLatitude()) + " longitude: " + String.valueOf(gps.getLongitude())).getBytes());
                             } else {
                                 Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
 
                                 addToWaitingToSendQueueAndTryReconnect();
                             }
 
-                            pushMessage("Me :" + " Latitude: " + String.valueOf(gps.getLatitude()) + " Langitude: " + String.valueOf(gps.getLongitude()));
+                            pushMessage("Me :" + " Latitude: " + String.valueOf(gps.getLatitude()) + " longitude: " + String.valueOf(gps.getLongitude()));
                             chatLine.setText("");
                         } else {
                             Log.d(TAG, "chatmanager is null");
