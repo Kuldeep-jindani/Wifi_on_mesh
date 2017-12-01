@@ -180,13 +180,13 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void onSuccess() {
                 Log.d(TAG, "forcedCancelConnect success");
-                Toast.makeText(MainActivity.this, "Cancel connect success", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Cancel connect success", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int reason) {
                 Log.d(TAG, "forcedCancelConnect failed, reason: " + reason);
-                Toast.makeText(MainActivity.this, "Cancel connect failed", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Cancel connect failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -218,9 +218,9 @@ public class MainActivity extends ActionBarActivity implements
                         MainActivity.this,
                         "internalStopDiscovery",
                         "Discovery stopped",
-                        "Discovery stopped",
-                        "Discovery stop failed",
-                        "Discovery stop failed"));
+                        null,
+                        null,
+                        null));
         manager.clearServiceRequests(channel,
                 new CustomizableActionListener(
                         MainActivity.this,
@@ -289,14 +289,14 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void onSuccess() {
                 Log.d(TAG, "Service discovery initiated");
-                Toast.makeText(MainActivity.this, "Service discovery initiated", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Service discovery initiated", Toast.LENGTH_SHORT).show();
                 blockForcedDiscoveryInBroadcastReceiver = false;
             }
 
             @Override
             public void onFailure(int reason) {
                 Log.d(TAG, "Service discovery failed");
-                Toast.makeText(MainActivity.this, "Service discovery failed, " + reason, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Service discovery failed, " + reason, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -337,7 +337,7 @@ public class MainActivity extends ActionBarActivity implements
                             "Disconnected",
                             "Disconnected",
                             "Disconnect failed",
-                            "Disconnect failed"));
+                            null));
         } else {
             Log.d("disconnectBecauseOnStop", "Impossible to disconnect");
         }
@@ -378,13 +378,13 @@ public class MainActivity extends ActionBarActivity implements
                 @Override
                 public void onFailure(int reasonCode) {
                     Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
-                    Toast.makeText(MainActivity.this, "Disconnect failed", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "Disconnect failed", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "Disconnected");
-                    Toast.makeText(MainActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
 
                     Log.d(TAG, "Discovery status: " + discoveryStatus);
 
@@ -589,7 +589,7 @@ public class MainActivity extends ActionBarActivity implements
                             "Error, device name not changed"));
         } catch (Exception e) {
             Log.e(TAG, "Exception during setDeviceNameWithReflection", e);
-            Toast.makeText(MainActivity.this, "Impossible to change the device name", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Impossible to change the device name", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -924,7 +924,7 @@ public class MainActivity extends ActionBarActivity implements
         findViewById(R.id.ptt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getApplicationContext(), com.example.saubhagyam.wifi_chat_.PTT.MainActivity.class));
             }
         });
@@ -982,9 +982,10 @@ public class MainActivity extends ActionBarActivity implements
                 return true;
             case R.id.cancelConnection:
 
-                this.setTabFragmentToPage(0);
+//                this.setTabFragmentToPage(0);
 
-                this.forcedCancelConnect();
+//                this.forcedCancelConnect();
+                finish();
 
                 return true;
             default:

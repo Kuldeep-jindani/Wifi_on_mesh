@@ -2,46 +2,71 @@ package com.example.saubhagyam.wifi_chat_;
 
 import android.*;
 import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
+import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-public class SplashScreen extends AppCompatActivity {
+public class SplashScreen extends Activity {
+    private SharedPreferences permissionStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        Handler handler = new Handler();
+      /*  Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 startActivity(new Intent(getApplicationContext(), new MainActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
-        }, 3000);
+        }, 3000);*/
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+        permissionStatus = getApplicationContext().getSharedPreferences("permission status", 0);
+        checkPermission();
+
+
+        if (ActivityCompat.checkSelfPermission(this,  permissionsRequired[0]) == PackageManager.PERMISSION_GRANTED) {
             //Got Permission
             proceedAfterPermission();
+        }if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CHANGE_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+            checkPermission();
+
+        } else {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(new Intent(getApplicationContext(), new MainActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                }
+            }, 3000);
         }
+
     }
 
-    String[] permissionsRequired = new String[]{android.Manifest.permission.CAMERA,
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION};
+    String[] permissionsRequired = new String[]{Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_PHONE_STATE};
 
     private static final int PERMISSION_CALLBACK_CONSTANT = 100;
     private static final int REQUEST_PERMISSION_SETTING = 101;
 
-    public void checkPermission(String[] strings, int permissionCallbackConstant) {
+    public void checkPermission() {
         if (ActivityCompat.checkSelfPermission(getApplication(), permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(getApplication(), permissionsRequired[1]) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(getApplication(), permissionsRequired[2]) != PackageManager.PERMISSION_GRANTED) {
@@ -49,7 +74,7 @@ public class SplashScreen extends AppCompatActivity {
                     || ActivityCompat.shouldShowRequestPermissionRationale(this, permissionsRequired[1])
                     || ActivityCompat.shouldShowRequestPermissionRationale(this, permissionsRequired[2])) {
                 //Show Information about why you need the permission
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
+                AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
                 builder.setTitle("Need Multiple Permissions");
                 builder.setMessage("This app needs Camera and Location permissions.");
                 builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
@@ -103,7 +128,8 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
     private void proceedAfterPermission() {
-        Toast.makeText(getApplicationContext(), "We got All Permissions", Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), "We got All Permissions", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(getApplicationContext(), new MainActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
     @Override
@@ -125,14 +151,14 @@ public class SplashScreen extends AppCompatActivity {
             if(allgranted){
                 proceedAfterPermission();
             } else if(ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,android.Manifest.permission.READ_PHONE_STATE)){
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
                 builder.setTitle("Need Storage Permission");
                 builder.setMessage("This app needs phone permission.");
                 builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-                        checkPermission(new String[]{android.Manifest.permission.READ_PHONE_STATE},PERMISSION_CALLBACK_CONSTANT);
+                        checkPermission();
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
